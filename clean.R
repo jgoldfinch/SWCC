@@ -34,7 +34,7 @@ rawtd <-read_csv(#from readr function)
 ##############################################
 # Subset columns to the ones you might use
 use_col <-c("Year","Grid Cell","Survey Route ID","Date","Overall Tracking Conditions","Suspected Species","Confidence",
-            "Species results","Carnivore tracks present?", "Genetics collected?")
+            "Species results","Carnivore tracks present?", "Genetics collected?", "Individual ID")
 
 keep <-rawtd %>%
   select(which(colnames(.)%in% use_col))
@@ -45,6 +45,10 @@ keep <-filter(keep, keep$`Genetics collected?` == "YES")
 keep2 <-keep[!(is.na(keep$`Species results`) | keep$`Species results`== "POOR DNA"| keep$`Species results` == "no sample"),]
 
 keep2$correct <-ifelse(keep2$`Suspected Species`==keep2$`Species results`,1,0)
-keep2$correct[is.na(keep2$correct),] <- 0
+keep2$correct[is.na(keep2$correct)] <- 0
 
 pc<-sum(keep2$correct)/nrow(keep2)
+
+keep3 <-keep2[keep2$correct==0,]
+
+keep3 %>% group_by(`Suspected Species`) %>% summarise(length(unique(`Species results`)))
