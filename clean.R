@@ -63,7 +63,14 @@ keep3 <-keep2[keep2$correct==0,]
 # Group by suspected species 
 keep3 %>% group_by(`Suspected Species`) %>% summarise(length(unique(`Species results`)))
 
+# Only look at ones that were identified to individual
+# Define group that you want to leave out
+keep4 <-keep2[!is.na(keep2$`Individual ID`),]
 
+keep4 <-keep4[keep4$`Individual ID`!="POOR DNA",]
+keep4 <-keep4[keep4$`Individual ID`!="na",]
+
+length(unique(keep4$`Individual ID`))
 
 # Read in bait station data
 rawbd <-read.csv("C:/Users/jgolding/Documents/USFS_R1_Carnivore_Monitoring/data/SWCC_do_not_distribute/data/SWCC_bait.csv")
@@ -71,14 +78,25 @@ rawbd <-read.csv("C:/Users/jgolding/Documents/USFS_R1_Carnivore_Monitoring/data/
 # Subset columns to the ones you might use
 use_col2 <-c("Year","Grid.Cell","Station.ID","Station.Easting","Station.Northing",
             "Set.up.Date", "Revisit.Date","Genetics.collected.","Sample.ID", 
-            "Sample.Source", "Suspected.Species","Species","Individual.ID")
+            "Sample.Source", "Suspected.Species","DNA.amp..Success.","Species","Individual.ID")
 
 # Subset the raw data to keep only the columns you're interested in
 keepb <-rawbd %>%
   select(which(colnames(.)%in% use_col2))
 
+# Keep only observations where DNA successfully amplified
+keepb <-filter(keepb, keepb$DNA.amp..Success. == "Yes")
+
+
 # Create a list of species to keep
 keepsp<-c("BOBCAT","WOLVERINE","MARTEN","LION","LYNX","RED SQUIRREL","SKUNK","ERMINE","N FLYING SQUIRREL",
           "LONG-TAILED WEASEL","RED FOX", "BEAVER", "mink")
 
-keepb2 <-filter(keepb, keepb$Species == "BOBCAT"|keepb$Species =="WOLVERINE"|)
+# Subset data to only species you are interested in
+keepb2 <-filter(keepb, keepb$Species %in% keepsp)
+
+# Group # of detections by species
+sp<-as.data.frame(table(keepb2$Species))
+
+length(unique(keepb2$Individual.ID))
+
