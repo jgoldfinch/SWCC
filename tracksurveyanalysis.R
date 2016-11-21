@@ -4,8 +4,8 @@
 
 ### R code for to simulate data for MDAM development ###
 
-#Create function to simulate dependent double-observer data for multiple species 
-#and multiple sites and multiple repeated surveys for a single season
+#Create function to simulate carnivore track count survey data for multiple species 
+#with both track and genetic id (not every track has a genetic id but all genetic IDs associated with tracks)
 
 sim.fun <- function(n.sites){
   
